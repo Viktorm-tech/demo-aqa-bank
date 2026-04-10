@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPattern": "/account/9999"
+  },
+  "response": {
+    "status": 404,
+    "jsonBody": {
+      "error": "Account not found"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
