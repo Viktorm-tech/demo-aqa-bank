@@ -1,0 +1,17 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPattern": "/account/([0-9]+)"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "id": 1,
+      "balance": 1000.50,
+      "currency": "USD"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
