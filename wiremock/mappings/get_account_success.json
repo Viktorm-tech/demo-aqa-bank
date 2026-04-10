@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPattern": "/account/([0-9]+)"
+    "urlPattern": "/account/1"
   },
   "response": {
     "status": 200,
