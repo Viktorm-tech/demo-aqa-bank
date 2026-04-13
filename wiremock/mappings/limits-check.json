@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/limits/check"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "allowed": "{{jsonPath request.body '$.amount' < 10000}}"
+    },
+    "transformers": ["response-template"]
+  }
+}

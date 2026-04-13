@@ -1,12 +1,11 @@
-version: '3.8'
-
 services:
   wiremock:
     image: wiremock/wiremock:latest
-    container_name: wiremock
+    command: --port 8080 --verbose
     ports:
-      - "8080:8080"
+      - "8081:8080"
     volumes:
       - ./wiremock/mappings:/home/wiremock/mappings
       - ./wiremock/__files:/home/wiremock/__files
-    command: --verbose --global-response-templating
+    environment:
+      WIREMOCK_OPTIONS: "--verbose"
