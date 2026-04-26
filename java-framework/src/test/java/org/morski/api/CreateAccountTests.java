@@ -53,7 +53,7 @@ public class CreateAccountTests extends BaseApiTest {
 
         String selectSql = "SELECT customer_id, balance, currency FROM accounts WHERE customer_id = ?";
         try (PreparedStatement stmt = dbConnection.prepareStatement(selectSql)) {
-            stmt.setInt(1, 10);
+            stmt.setString(1, "10");
             try (ResultSet rs = stmt.executeQuery()) {
                 assertThat(rs.next()).isTrue();
                 assertThat(rs.getInt("customer_id")).isEqualTo(10);
