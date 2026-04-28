@@ -1,17 +1,14 @@
-package org.morski.api;
+package org.morski.tests;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.junit.jupiter.api.BeforeEach;
-import org.morski.base.BaseApiTest;
+import org.morski.base.BaseTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Story;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.morski.db.DatabaseClient;
-import org.morski.kafka.KafkaConsumerClient;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.Duration;
@@ -20,10 +17,11 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Epic("API Tests")
 @Story("Account operations")
-public class CreateAccountTests extends BaseApiTest {
+public class CreateAccountTests extends BaseTest {
 
     @Test
     @DisplayName("Create new account")
@@ -49,7 +47,7 @@ public class CreateAccountTests extends BaseApiTest {
                 .body("currency", equalTo("EUR"))
                 .body("status", equalTo("ACTIVE"));
 
-        var accountId = responseBody.extract().path("id");
+        String accountId = responseBody.extract().path("id");
 
         String selectSql = "SELECT customer_id, balance, currency FROM accounts WHERE customer_id = ?";
         try (PreparedStatement stmt = dbConnection.prepareStatement(selectSql)) {
@@ -62,11 +60,18 @@ public class CreateAccountTests extends BaseApiTest {
             }
         }
 
-        ConsumerRecord<String, String> record = kafkaConsumer.poll(Duration.ofSeconds(10));
+        ConsumerRecord<String, String> record = kafkaClient.waitForRecordByKey(
+                accountId,
+                "account-events",
+                Duration.ofSeconds(10)
+        );
+
         assertThat(record).isNotNull();
-        assertThat(record.topic()).isEqualTo("account-events");
         String event = record.value();
-        assertThat(event).contains("\"eventType\":\"ACCOUNT_CREATED\"");
-        assertThat(event).contains("\"accountId\":" + accountId);
+        var mapper = new ObjectMapper();
+        var jsonNode = mapper.readTree(event);
+        assertEquals("ACCOUNT_CREATED", jsonNode.get("eventType").asText());
+        assertEquals(accountId, jsonNode.get("accountId").asText());
+        assertEquals("10", jsonNode.get("data").get("customerId").asText());
     }
 }

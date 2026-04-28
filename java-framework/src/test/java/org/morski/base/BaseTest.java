@@ -1,0 +1,71 @@
+package org.morski.base;
+
+import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.filter.log.LogDetail;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.morski.config.TestConfig;
+import org.morski.db.DatabaseClient;
+import org.morski.kafka.KafkaClient;
+
+import java.sql.Connection;
+import java.util.Collections;
+import java.util.Properties;
+import java.util.UUID;
+
+public abstract class BaseTest {
+
+    private static DatabaseClient dbClient;
+    protected static RequestSpecification requestSpec;
+    protected static Connection dbConnection;
+
+    protected KafkaConsumer<String, String> kafkaConsumer;
+    protected KafkaClient kafkaClient;
+
+    @BeforeAll
+    public static void setup() throws Exception{
+        RestAssured.baseURI = "http://localhost:8080";
+
+        requestSpec = new RequestSpecBuilder()
+                .setContentType(ContentType.JSON)
+                .log(LogDetail.ALL)
+                .build();
+
+        dbClient = new DatabaseClient();
+        dbConnection = dbClient.getConnection();
+    }
+
+    @BeforeEach
+    void setUpKafka() {
+        Properties props = new Properties();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, TestConfig.getKafkaBootstrapServers());
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "test-group-" + UUID.randomUUID());
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+
+        kafkaConsumer = new KafkaConsumer<>(props);
+        kafkaConsumer.subscribe(Collections.singletonList("account-events"));
+        kafkaClient = new KafkaClient(kafkaConsumer);
+    }
+
+    @AfterEach
+    void tearDownKafka() {
+        if (kafkaConsumer != null) {
+            kafkaConsumer.close();
+        }
+    }
+
+    @AfterAll
+    public static void tearDown() throws Exception {
+        dbClient.close();
+    }
+}
