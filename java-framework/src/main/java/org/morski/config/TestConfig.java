@@ -14,7 +14,7 @@ public class TestConfig {
                 props.setProperty("db.url", System.getenv().getOrDefault("DB_URL", "jdbc:postgresql://localhost:5432/bankingdb"));
                 props.setProperty("db.user", System.getenv().getOrDefault("DB_USER", "bankinguser"));
                 props.setProperty("db.password", System.getenv().getOrDefault("DB_PASSWORD", "bankingpass"));
-                props.setProperty("kafka.bootstrap.servers", System.getenv().getOrDefault("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092"));
+                props.setProperty("kafka.bootstrap.servers", System.getenv().getOrDefault("KAFKA_BOOTSTRAP_SERVERS", "localhost:29092"));
                 props.setProperty("kafka.topic.account.events", System.getenv().getOrDefault("KAFKA_TOPIC_ACCOUNT_EVENTS", "account-events"));
             }
         } catch (Exception e) {
