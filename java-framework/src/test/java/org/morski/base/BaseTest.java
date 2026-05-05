@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
-import io.restassured.specification.RequestSpecification;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -15,8 +14,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.morski.config.TestConfig;
 import org.morski.db.DatabaseClient;
 import org.morski.kafka.KafkaClient;
+import org.morski.steps.ApiSteps;
+import org.morski.steps.DatabaseSteps;
+import org.morski.steps.KafkaSteps;
 
-import java.sql.Connection;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.UUID;
@@ -24,23 +25,25 @@ import java.util.UUID;
 public abstract class BaseTest {
 
     private static DatabaseClient dbClient;
-    protected static RequestSpecification requestSpec;
-    protected static Connection dbConnection;
+    private KafkaConsumer<String, String> kafkaConsumer;
 
-    protected KafkaConsumer<String, String> kafkaConsumer;
-    protected KafkaClient kafkaClient;
+    protected static ApiSteps accountApiSteps;
+    protected static DatabaseSteps databaseSteps;
+    protected KafkaSteps kafkaSteps;
 
     @BeforeAll
     public static void setup() throws Exception{
         RestAssured.baseURI = "http://localhost:8080";
 
-        requestSpec = new RequestSpecBuilder()
+        var requestSpec = new RequestSpecBuilder()
                 .setContentType(ContentType.JSON)
                 .log(LogDetail.ALL)
                 .build();
 
+        accountApiSteps = new ApiSteps(requestSpec);
+
         dbClient = new DatabaseClient();
-        dbConnection = dbClient.getConnection();
+        databaseSteps = new DatabaseSteps(dbClient.getConnection());
     }
 
     @BeforeEach
@@ -54,7 +57,8 @@ public abstract class BaseTest {
 
         kafkaConsumer = new KafkaConsumer<>(props);
         kafkaConsumer.subscribe(Collections.singletonList("account-events"));
-        kafkaClient = new KafkaClient(kafkaConsumer);
+        KafkaClient kafkaClient = new KafkaClient(kafkaConsumer);
+        kafkaSteps = new KafkaSteps(kafkaClient);
     }
 
     @AfterEach
