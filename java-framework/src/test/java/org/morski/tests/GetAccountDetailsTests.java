@@ -13,7 +13,7 @@ public class GetAccountDetailsTests {
     @Test
     @DisplayName("Get account details")
     @Description("Positive: GET /api/accounts/{id} returns account data")
-    public void createAccountTest() throws Exception {
+    public void GetAccountTest() throws Exception {
 
     }
 }

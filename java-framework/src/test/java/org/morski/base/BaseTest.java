@@ -43,7 +43,7 @@ public abstract class BaseTest {
         accountApiSteps = new ApiSteps(requestSpec);
 
         dbClient = new DatabaseClient();
-        databaseSteps = new DatabaseSteps(dbClient.getConnection());
+        databaseSteps = new DatabaseSteps(dbClient);
     }
 
     @BeforeEach
