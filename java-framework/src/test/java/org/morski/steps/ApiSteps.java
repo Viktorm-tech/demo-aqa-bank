@@ -5,6 +5,8 @@ import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
+import java.math.BigDecimal;
+
 import static io.restassured.RestAssured.given;
 
 public class ApiSteps {
@@ -16,12 +18,12 @@ public class ApiSteps {
     }
 
     @Step("Create account: customerId = {customerId}, balance = {initialBalance}, currency = {currency}")
-    public Response createAccount(String customerId, int initialBalance, String currency) {
+    public Response createAccount(String customerId, BigDecimal initialBalance, String currency) {
 
         String body = String.format("""
                 {
                     "customerId": %s,
-                    "initialBalance": %d,
+                    "initialBalance": %s,
                     "currency": "%s"
                 }
                 """, customerId, initialBalance, currency);

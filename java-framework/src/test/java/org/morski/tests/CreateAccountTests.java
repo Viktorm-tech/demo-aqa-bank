@@ -8,6 +8,7 @@ import io.qameta.allure.Story;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,9 +23,9 @@ public class CreateAccountTests extends BaseTest {
     @DisplayName("Create new account")
     @Description("Positive: POST /api/accounts creates account and returns 201")
     public void createAccountTest() throws Exception {
-        String customerId = "10";
-        int initialBalance = 500;
-        String currency = "EUR";
+        var customerId = "10";
+        var initialBalance = new BigDecimal("500.00");
+        var currency = "EUR";
 
         var response = accountApiSteps.createAccount(customerId, initialBalance, currency);
 

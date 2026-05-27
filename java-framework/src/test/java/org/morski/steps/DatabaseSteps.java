@@ -3,6 +3,7 @@ package org.morski.steps;
 import io.qameta.allure.Step;
 import org.morski.db.DatabaseClient;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -25,7 +26,7 @@ public class DatabaseSteps {
 
     @Step("Verify account id {accountId} has valid data in DB")
     public void verifyAccount(String accountId, String expectedCustomerId,
-                              int expectedBalance, String expectedCurrency) throws SQLException {
+                              BigDecimal expectedBalance, String expectedCurrency) throws SQLException {
         var sql = "SELECT customer_id, balance, currency FROM accounts WHERE id = ?";
         var rows = dbClient.executeQuery(sql, UUID.fromString(accountId));
         assertThat(rows).hasSize(1);

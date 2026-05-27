@@ -2,8 +2,11 @@ package org.morski.base;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.config.JsonConfig;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
+import io.restassured.path.json.config.JsonPathConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -34,6 +37,8 @@ public abstract class BaseTest {
     @BeforeAll
     public static void setup() throws Exception{
         RestAssured.baseURI = "http://localhost:8080";
+        RestAssured.config = RestAssuredConfig.config()
+                .jsonConfig(JsonConfig.jsonConfig().numberReturnType(JsonPathConfig.NumberReturnType.BIG_DECIMAL));
 
         var requestSpec = new RequestSpecBuilder()
                 .setContentType(ContentType.JSON)
