@@ -4,8 +4,7 @@ import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-
-import java.math.BigDecimal;
+import org.morski.dto.Account;
 
 import static io.restassured.RestAssured.given;
 
@@ -17,8 +16,8 @@ public class ApiSteps {
         this.spec = spec;
     }
 
-    @Step("Create account: customerId = {customerId}, balance = {initialBalance}, currency = {currency}")
-    public Response createAccount(String customerId, BigDecimal initialBalance, String currency) {
+    @Step("Create account")
+    public Response createAccount(Account account) {
 
         String body = String.format("""
                 {
@@ -26,7 +25,11 @@ public class ApiSteps {
                     "initialBalance": %s,
                     "currency": "%s"
                 }
-                """, customerId, initialBalance, currency);
+                """,
+                account.getCustomerId(),
+                account.getBalance(),
+                account.getCurrency()
+        );
 
         Allure.addAttachment("Request body", "application/json", body);
 

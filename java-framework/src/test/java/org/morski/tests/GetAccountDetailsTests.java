@@ -6,6 +6,8 @@ import io.qameta.allure.Story;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.morski.steps.AccountSteps.createDefaultAccount;
+
 @Epic("Integration Tests")
 @Story("Account operations")
 public class GetAccountDetailsTests {
@@ -14,6 +16,6 @@ public class GetAccountDetailsTests {
     @DisplayName("Get account details")
     @Description("Positive: GET /api/accounts/{id} returns account data")
     public void GetAccountTest() throws Exception {
-
+        var account = createDefaultAccount();
     }
 }

@@ -2,8 +2,8 @@ package org.morski.steps;
 
 import io.qameta.allure.Step;
 import org.morski.db.DatabaseClient;
+import org.morski.dto.Account;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -18,22 +18,30 @@ public class DatabaseSteps {
     }
 
     @Step("Create account in DB")
-    public void createAccount() throws SQLException {
+    public void createAccount(Account account) throws SQLException {
         var sql ="INSERT INTO accounts (id, customer_id, balance, currency, status, created_at, updated_at)" +
                 " VALUES (?, ?, ?, ?, ?, ?, ?)";
-        dbClient.executeUpdate(sql);
+        dbClient.executeUpdate(
+                sql,
+                account.getId(),
+                account.getCustomerId(),
+                account.getBalance(),
+                account.getCurrency(),
+                account.getStatus(),
+                account.getCreatedAt(),
+                account.getUpdatedAt()
+        );
     }
 
     @Step("Verify account id {accountId} has valid data in DB")
-    public void verifyAccount(String accountId, String expectedCustomerId,
-                              BigDecimal expectedBalance, String expectedCurrency) throws SQLException {
+    public void verifyAccount(String accountId, Account account) throws SQLException {
         var sql = "SELECT customer_id, balance, currency FROM accounts WHERE id = ?";
         var rows = dbClient.executeQuery(sql, UUID.fromString(accountId));
         assertThat(rows).hasSize(1);
         assertThat(rows).singleElement().satisfies(row -> {
-            assertThat(row.get("customer_id")).isEqualTo(expectedCustomerId);
-            assertThat(row.get("balance")).isEqualTo(expectedBalance);
-            assertThat(row.get("currency")).isEqualTo(expectedCurrency);
+            assertThat(row.get("customer_id")).isEqualTo(account.getCustomerId());
+            assertThat(row.get("balance")).isEqualTo(account.getBalance());
+            assertThat(row.get("currency")).isEqualTo(account.getCurrency());
         });
     }
 }

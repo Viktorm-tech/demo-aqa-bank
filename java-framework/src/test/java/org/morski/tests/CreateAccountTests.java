@@ -7,6 +7,8 @@ import io.qameta.allure.Epic;
 import io.qameta.allure.Story;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.morski.constants.Currency;
+import org.morski.dto.Account;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -23,21 +25,23 @@ public class CreateAccountTests extends BaseTest {
     @DisplayName("Create new account")
     @Description("Positive: POST /api/accounts creates account and returns 201")
     public void createAccountTest() throws Exception {
-        var customerId = "10";
-        var initialBalance = new BigDecimal("500.00");
-        var currency = "EUR";
+        var account = Account.builder()
+                .customerId(10)
+                .balance(new BigDecimal("500.00"))
+                .currency(Currency.EUR)
+                .build();
 
-        var response = accountApiSteps.createAccount(customerId, initialBalance, currency);
+        var response = accountApiSteps.createAccount(account);
 
         response.then()
-                .body("balance", equalTo(initialBalance))
-                .body("currency", equalTo(currency))
-                .body("customerId", equalTo(customerId))
+                .body("balance", equalTo(account.getBalance()))
+                .body("currency", equalTo(account.getCurrency()))
+                .body("customerId", equalTo(account.getCustomerId()))
                 .body("status", equalTo("ACTIVE"));
 
         String accountId = response.path("id");
 
-        databaseSteps.verifyAccount(accountId, customerId, initialBalance, currency);
+        databaseSteps.verifyAccount(accountId, account);
 
         var record = kafkaSteps.waitForEvent(accountId, "account-events", Duration.ofSeconds(10));
 
@@ -47,6 +51,6 @@ public class CreateAccountTests extends BaseTest {
         var jsonNode = mapper.readTree(event);
         assertEquals("ACCOUNT_CREATED", jsonNode.get("eventType").asText());
         assertEquals(accountId, jsonNode.get("accountId").asText());
-        assertEquals("10", jsonNode.get("data").get("customerId").asText());
+        assertEquals(String.valueOf(account.getCustomerId()), jsonNode.get("data").get("customerId").asText());
     }
 }
