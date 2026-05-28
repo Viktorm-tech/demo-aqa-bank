@@ -27,7 +27,7 @@ public class CreateAccountTests extends BaseTest {
     public void createAccountTest() throws Exception {
         var account = Account.builder()
                 .customerId(10)
-                .balance(new BigDecimal("500.00"))
+                .balance(BigDecimal.valueOf(500, 2))
                 .currency(Currency.EUR)
                 .build();
 
