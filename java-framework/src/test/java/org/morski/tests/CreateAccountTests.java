@@ -14,8 +14,8 @@ import java.math.BigDecimal;
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.morski.validators.ApiValidators.validateNewAccountResponse;
 
 @Epic("Integration Tests")
 @Story("Account operations")
@@ -26,20 +26,16 @@ public class CreateAccountTests extends BaseTest {
     @Description("Positive: POST /api/accounts creates account and returns 201")
     public void createAccountTest() throws Exception {
         var account = Account.builder()
-                .customerId(10)
+                .customerId("acc123")
                 .balance(BigDecimal.valueOf(500, 2))
                 .currency(Currency.EUR)
                 .build();
 
         var response = accountApiSteps.createAccount(account);
 
-        response.then()
-                .body("balance", equalTo(account.getBalance()))
-                .body("currency", equalTo(account.getCurrency()))
-                .body("customerId", equalTo(account.getCustomerId()))
-                .body("status", equalTo("ACTIVE"));
+        validateNewAccountResponse(response, account);
 
-        String accountId = response.path("id");
+        String accountId = response.getId().toString();
 
         databaseSteps.verifyAccount(accountId, account);
 

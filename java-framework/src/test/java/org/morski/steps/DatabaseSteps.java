@@ -41,7 +41,7 @@ public class DatabaseSteps {
         assertThat(rows).singleElement().satisfies(row -> {
             assertThat(row.get("customer_id")).isEqualTo(account.getCustomerId());
             assertThat(row.get("balance")).isEqualTo(account.getBalance());
-            assertThat(row.get("currency")).isEqualTo(account.getCurrency());
+            assertThat(row.get("currency")).isEqualTo(account.getCurrency().name());
         });
     }
 }

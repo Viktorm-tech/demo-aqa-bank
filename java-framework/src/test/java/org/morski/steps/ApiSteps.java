@@ -2,9 +2,9 @@ package org.morski.steps;
 
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
-import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.morski.dto.Account;
+import org.morski.dto.AccountResponse;
 
 import java.util.UUID;
 
@@ -19,11 +19,11 @@ public class ApiSteps {
     }
 
     @Step("Create account")
-    public Response createAccount(Account account) {
+    public AccountResponse createAccount(Account account) {
 
         String body = String.format("""
                 {
-                    "customerId": %s,
+                    "customerId": "%s",
                     "initialBalance": %s,
                     "currency": "%s"
                 }
@@ -42,12 +42,11 @@ public class ApiSteps {
                 .post("/api/accounts")
                 .then()
                 .statusCode(201)
-                .extract()
-                .response();
+                .extract().as(AccountResponse.class);
     }
 
     @Step("Get account id {accountId}")
-    public Response getAccountById(UUID accountId) {
+    public AccountResponse getAccountById(UUID accountId) {
         return given()
                 .spec(spec)
                 .when()
@@ -55,6 +54,6 @@ public class ApiSteps {
                 .then()
                 .statusCode(200)
                 .extract()
-                .response();
+                .as(AccountResponse.class);
     }
 }

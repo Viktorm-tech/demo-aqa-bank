@@ -14,7 +14,7 @@ import java.util.UUID;
 public class Account {
 
     private final UUID id;
-    private final int customerId;
+    private final String customerId;
     private final BigDecimal balance;
     private final Currency currency;
     private final AccountStatus status;
