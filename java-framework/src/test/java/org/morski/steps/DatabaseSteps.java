@@ -26,8 +26,8 @@ public class DatabaseSteps {
                 account.getId(),
                 account.getCustomerId(),
                 account.getBalance(),
-                account.getCurrency(),
-                account.getStatus(),
+                account.getCurrency().name(),
+                account.getStatus().name(),
                 account.getCreatedAt(),
                 account.getUpdatedAt()
         );

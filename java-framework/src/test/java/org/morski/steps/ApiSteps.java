@@ -6,6 +6,8 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.morski.dto.Account;
 
+import java.util.UUID;
+
 import static io.restassured.RestAssured.given;
 
 public class ApiSteps {
@@ -39,6 +41,19 @@ public class ApiSteps {
                 .when()
                 .post("/api/accounts")
                 .then()
+                .statusCode(201)
+                .extract()
+                .response();
+    }
+
+    @Step("Get account id {accountId}")
+    public Response getAccountById(UUID accountId) {
+        return given()
+                .spec(spec)
+                .when()
+                .get(String.format("/api/accounts/%s", accountId))
+                .then()
+                .statusCode(200)
                 .extract()
                 .response();
     }
