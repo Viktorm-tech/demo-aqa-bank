@@ -6,7 +6,9 @@ import io.qameta.allure.Story;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.morski.base.BaseTest;
+import org.morski.dto.AccountResponse;
 
+import static java.util.UUID.randomUUID;
 import static org.morski.steps.AccountSteps.createDefaultAccount;
 import static org.morski.validators.ApiValidators.validateAccountResponse;
 
@@ -22,8 +24,23 @@ public class GetAccountDetailsTests extends BaseTest {
         var account = createDefaultAccount();
         databaseSteps.createAccount(account);
 
-        var response = accountApiSteps.getAccountById(account.getId());
+        var response = accountApiSteps.getAccountById(account.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(AccountResponse.class);
 
         validateAccountResponse(response, account);
+    }
+
+
+    @Test
+    @DisplayName("Get account not exist")
+    @Description("Negative: GET /api/accounts/{id} returns 404 if account not exist")
+    public void GetAccountNotExistTest() {
+
+        accountApiSteps.getAccountById(randomUUID())
+                .then()
+                .statusCode(404);
     }
 }

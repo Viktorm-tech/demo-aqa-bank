@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.morski.constants.Currency;
 import org.morski.dto.Account;
+import org.morski.dto.AccountResponse;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -31,7 +32,12 @@ public class CreateAccountTests extends BaseTest {
                 .currency(Currency.EUR)
                 .build();
 
-        var response = accountApiSteps.createAccount(account);
+        var response = accountApiSteps.createAccount(account)
+                .then()
+                .statusCode(201)
+                .extract()
+                .as(AccountResponse.class);;
+
 
         validateNewAccountResponse(response, account);
 
