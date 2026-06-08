@@ -30,7 +30,7 @@ public abstract class BaseTest {
     private static DatabaseClient dbClient;
     private KafkaConsumer<String, String> kafkaConsumer;
 
-    protected static ApiSteps accountApiSteps;
+    protected static ApiSteps apiSteps;
     protected static DatabaseSteps databaseSteps;
     protected KafkaSteps kafkaSteps;
 
@@ -45,7 +45,7 @@ public abstract class BaseTest {
                 .log(LogDetail.ALL)
                 .build();
 
-        accountApiSteps = new ApiSteps(requestSpec);
+        apiSteps = new ApiSteps(requestSpec);
 
         dbClient = new DatabaseClient();
         databaseSteps = new DatabaseSteps(dbClient);

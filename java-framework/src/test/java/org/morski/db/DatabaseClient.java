@@ -9,8 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class DatabaseClient implements AutoCloseable {
         );
     }
 
-    public List<Map<String, Object>> executeQuery(String sql, Object... params) throws SQLException {
+    public List<Map<String, Object>> executeQuery(String sql, Object... params) {
         List<Map<String, Object>> rows = new ArrayList<>();
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             for (int i = 0; i < params.length; i++) {
@@ -44,16 +44,26 @@ public class DatabaseClient implements AutoCloseable {
                     rows.add(row);
                 }
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    String.format("SQL execution failed: %s | Params: %s", sql, Arrays.toString(params)),
+                    e
+            );
         }
         return rows;
     }
 
-    public int executeUpdate(String sql, Object... params) throws SQLException {
+    public int executeUpdate(String sql, Object... params) {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             for (int i = 0; i < params.length; i++) {
                 stmt.setObject(i + 1, params[i]);
             }
             return stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    String.format("SQL execution failed: %s | Params: %s", sql, Arrays.toString(params)),
+                    e
+            );
         }
     }
 

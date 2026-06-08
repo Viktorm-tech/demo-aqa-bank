@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.morski.dto.Account;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
@@ -48,5 +49,25 @@ public class ApiSteps {
                 .spec(spec)
                 .when()
                 .get(String.format("/api/accounts/%s", accountId));
+    }
+
+    @Step("Create account")
+    public Response deposit(String accountID, BigDecimal amount) {
+
+        String body = String.format("""
+                {
+                    "amount": %s
+                }
+                """,
+                amount
+        );
+
+        Allure.addAttachment("Request body", "application/json", body);
+
+        return given()
+                .spec(spec)
+                .body(body)
+                .when()
+                .post(String.format("/api/accounts/%s/deposit", accountID));
     }
 }

@@ -19,12 +19,12 @@ public class GetAccountDetailsTests extends BaseTest {
     @Test
     @DisplayName("Get account details")
     @Description("Positive: GET /api/accounts/{id} returns account data")
-    public void GetAccountTest() throws Exception {
+    public void getAccountTest() {
 
         var account = createDefaultAccount();
         databaseSteps.createAccount(account);
 
-        var response = accountApiSteps.getAccountById(account.getId())
+        var response = apiSteps.getAccountById(account.getId())
                 .then()
                 .statusCode(200)
                 .extract()
@@ -37,9 +37,9 @@ public class GetAccountDetailsTests extends BaseTest {
     @Test
     @DisplayName("Get account not exist")
     @Description("Negative: GET /api/accounts/{id} returns 404 if account not exist")
-    public void GetAccountNotExistTest() {
+    public void getAccountNotExistTest() {
 
-        accountApiSteps.getAccountById(randomUUID())
+        apiSteps.getAccountById(randomUUID())
                 .then()
                 .statusCode(404);
     }

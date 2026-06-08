@@ -32,27 +32,27 @@ public class CreateAccountTests extends BaseTest {
                 .currency(Currency.EUR)
                 .build();
 
-        var response = accountApiSteps.createAccount(account)
+        var response = apiSteps.createAccount(account)
                 .then()
                 .statusCode(201)
                 .extract()
-                .as(AccountResponse.class);;
+                .as(AccountResponse.class);
 
 
         validateNewAccountResponse(response, account);
 
-        String accountId = response.getId().toString();
+        var accountId = response.getId();
 
         databaseSteps.verifyAccount(accountId, account);
 
-        var record = kafkaSteps.waitForEvent(accountId, "account-events", Duration.ofSeconds(10));
+        var record = kafkaSteps.waitForEvent(accountId.toString(), "account-events", Duration.ofSeconds(10));
 
         assertThat(record).isNotNull();
         String event = record.value();
         var mapper = new ObjectMapper();
         var jsonNode = mapper.readTree(event);
         assertEquals("ACCOUNT_CREATED", jsonNode.get("eventType").asText());
-        assertEquals(accountId, jsonNode.get("accountId").asText());
+        assertEquals(accountId.toString(), jsonNode.get("accountId").asText());
         assertEquals(String.valueOf(account.getCustomerId()), jsonNode.get("data").get("customerId").asText());
     }
 }
