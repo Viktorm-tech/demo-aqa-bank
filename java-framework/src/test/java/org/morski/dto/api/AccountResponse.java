@@ -1,4 +1,4 @@
-package org.morski.dto;
+package org.morski.dto.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

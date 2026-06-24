@@ -4,7 +4,7 @@ import io.qameta.allure.Step;
 import org.assertj.core.api.SoftAssertions;
 import org.morski.constants.AccountStatus;
 import org.morski.dto.Account;
-import org.morski.dto.AccountResponse;
+import org.morski.dto.api.AccountResponse;
 
 public class ApiValidators {
 

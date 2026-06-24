@@ -6,7 +6,7 @@ import io.qameta.allure.Story;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.morski.base.BaseTest;
-import org.morski.dto.AccountResponse;
+import org.morski.dto.api.AccountResponse;
 
 import static java.util.UUID.randomUUID;
 import static org.morski.steps.AccountSteps.createDefaultAccount;
