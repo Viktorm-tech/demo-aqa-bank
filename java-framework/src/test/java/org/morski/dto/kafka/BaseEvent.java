@@ -1,11 +1,12 @@
 package org.morski.dto.kafka;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.morski.utils.InstantFrom7IntArrayDeserializer;
 
 import java.time.Instant;
 
@@ -27,6 +28,6 @@ public abstract class BaseEvent {
     private String accountId;
     private String relatedAccountId;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
+    @JsonDeserialize(using = InstantFrom7IntArrayDeserializer.class)
     private Instant timestamp;
 }

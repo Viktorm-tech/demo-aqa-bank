@@ -51,7 +51,7 @@ public class ApiSteps {
                 .get(String.format("/api/accounts/%s", accountId));
     }
 
-    @Step("Create account")
+    @Step("Deposit funds: amount={amount}")
     public Response deposit(String accountID, BigDecimal amount) {
 
         String body = String.format("""
@@ -69,5 +69,25 @@ public class ApiSteps {
                 .body(body)
                 .when()
                 .post(String.format("/api/accounts/%s/deposit", accountID));
+    }
+
+    @Step("Withdraw funds: amount={amount}")
+    public Response withdraw(String accountID, BigDecimal amount) {
+
+        String body = String.format("""
+                {
+                    "amount": %s
+                }
+                """,
+                amount
+        );
+
+        Allure.addAttachment("Request body", "application/json", body);
+
+        return given()
+                .spec(spec)
+                .body(body)
+                .when()
+                .post(String.format("/api/accounts/%s/withdraw", accountID));
     }
 }

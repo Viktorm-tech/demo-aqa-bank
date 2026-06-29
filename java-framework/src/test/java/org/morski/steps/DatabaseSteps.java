@@ -61,7 +61,7 @@ public class DatabaseSteps {
     }
 
     @Step("Verify balance increased by {amount}")
-    public void verifyBalanceIncreased(Account account, BigDecimal amount, Instant updatedAt) {
+    public void verifyBalanceChanged(Account account, BigDecimal expectedBalance, Instant updatedAt) {
         var row = getAccountFromDB(account.getId());
 
         LocalDateTime dbCreatedAt = toLocalDateTime(row.get("created_at"));
@@ -71,7 +71,7 @@ public class DatabaseSteps {
         LocalDateTime expectedUpdatedAt = LocalDateTime.ofInstant(updatedAt, ZoneOffset.UTC);
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(row.get("customer_id")).as("customer_id").isEqualTo(account.getCustomerId());
-            softly.assertThat(row.get("balance")).as("balance").isEqualTo(account.getBalance().add(amount));
+            softly.assertThat(row.get("balance")).as("balance").isEqualTo(expectedBalance);
             softly.assertThat(row.get("currency")).as("currency").isEqualTo(account.getCurrency().name());
             softly.assertThat(row.get("status")).as("status").isEqualTo(account.getStatus().name());
             softly.assertThat(truncateToSeconds(dbCreatedAt))

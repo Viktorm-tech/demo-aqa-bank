@@ -23,4 +23,16 @@ public class AccountSteps {
                 .updatedAt(now().minusDays(1))
                 .build();
     }
+
+    public static Account createAccountWithBalance(BigDecimal balance) {
+        return Account.builder()
+                .id(randomUUID())
+                .customerId(RandomStringUtils.insecure().nextAlphanumeric(10))
+                .balance(balance)
+                .currency(Currency.USD)
+                .status(AccountStatus.ACTIVE)
+                .createdAt(now().minusDays(2))
+                .updatedAt(now().minusDays(1))
+                .build();
+    }
 }
