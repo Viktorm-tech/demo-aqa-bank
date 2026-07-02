@@ -13,9 +13,9 @@ import static org.morski.steps.AccountSteps.createAccountWithBalance;
 
 public class WithdrawFundsTest extends BaseTest {
     @Test
-    @DisplayName("Deposit funds")
+    @DisplayName("Withdraw funds")
     @Description("Positive: POST /api/accounts/{id}/withdraw returns 200 OK amount debited from balance")
-    public void depositFundsTest() {
+    public void withdrawFundsTest() {
 
         var initialBalance = BigDecimal.valueOf(500, 2);
         var account = createAccountWithBalance(initialBalance);

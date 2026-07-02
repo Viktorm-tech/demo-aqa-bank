@@ -6,8 +6,10 @@
   "response": {
     "status": 200,
     "jsonBody": {
-      "allowed": "{{jsonPath request.body '$.amount' < 10000}}"
+      "allowed": true
     },
-    "transformers": ["response-template"]
+    "headers": {
+      "Content-Type": "application/json"
+    }
   }
 }
