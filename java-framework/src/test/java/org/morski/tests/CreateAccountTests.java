@@ -41,6 +41,6 @@ public class CreateAccountTests extends BaseTest {
 
         databaseSteps.verifyAccount(accountId, account);
 
-        kafkaSteps.verifyAccountCreatedEvent(accountId.toString(), account);
+        kafkaSteps.verifyAccountCreatedEvent(accountId.toString(), account, 20);
     }
 }

@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class KafkaSteps {
 
-    private static final Duration BASE_TIMEOUT = Duration.ofSeconds(10);
+    private static final int BASE_TIMEOUT = 10;
     private static final String TOPIC = "account-events";
     private final KafkaClient kafkaClient;
     private final ObjectMapper objectMapper;
@@ -32,11 +32,6 @@ public class KafkaSteps {
         ConsumerRecord<String, String> record = kafkaClient.waitForRecordByKey(key, topic, timeout);
         assertThat(record).as("Message with key %s not found", key).isNotNull();
 
-        String json = record.value();
-        System.out.println("=== Kafka message JSON ===");
-        System.out.println(json);
-        System.out.println("===========================");
-
         try {
             return objectMapper.readValue(record.value(), BaseEvent.class);
         } catch (JsonProcessingException e) {
@@ -45,8 +40,8 @@ public class KafkaSteps {
     }
 
     @Step("Verify ACCOUNT_CREATED event")
-    public void verifyAccountCreatedEvent(String accountId, Account account) {
-        BaseEvent event = waitForEvent(accountId, TOPIC, BASE_TIMEOUT);
+    public void verifyAccountCreatedEvent(String accountId, Account account, int timeout) {
+        BaseEvent event = waitForEvent(accountId, TOPIC, Duration.ofSeconds(timeout));
 
         assertThat(event).isInstanceOf(AccountCreatedEvent.class);
         AccountCreatedEvent created = (AccountCreatedEvent) event;
@@ -67,5 +62,9 @@ public class KafkaSteps {
                 .isEqualTo(account.getCurrency().name());
         softly.assertThat(created.getTimestamp()).as("timestamp").isNotNull();
         softly.assertAll();
+    }
+
+    public void verifyAccountCreatedEvent(String accountId, Account account) {
+        verifyAccountCreatedEvent(accountId, account, BASE_TIMEOUT);
     }
 }
