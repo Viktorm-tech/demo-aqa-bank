@@ -90,4 +90,26 @@ public class ApiSteps {
                 .when()
                 .post(String.format("/api/accounts/%s/withdraw", accountID));
     }
+
+    @Step("Transfer {amount}")
+    public Response transfer(String senderId, String receiverId, BigDecimal amount) {
+
+        String body = String.format("""
+                {
+                    "toAccountId": "%s",
+                    "amount": %s
+                }
+                """,
+                receiverId,
+                amount
+        );
+
+        Allure.addAttachment("Request body", "application/json", body);
+
+        return given()
+                .spec(spec)
+                .body(body)
+                .when()
+                .post(String.format("/api/accounts/%s/transfer", senderId));
+    }
 }

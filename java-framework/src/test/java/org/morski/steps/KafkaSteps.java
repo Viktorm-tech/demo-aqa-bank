@@ -9,8 +9,10 @@ import org.assertj.core.api.SoftAssertions;
 import org.morski.dto.Account;
 import org.morski.dto.kafka.AccountCreatedEvent;
 import org.morski.dto.kafka.BaseEvent;
+import org.morski.dto.kafka.TransferCompletedEvent;
 import org.morski.kafka.KafkaClient;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,5 +68,29 @@ public class KafkaSteps {
 
     public void verifyAccountCreatedEvent(String accountId, Account account) {
         verifyAccountCreatedEvent(accountId, account, BASE_TIMEOUT);
+    }
+
+    @Step("Verify TRANSFER_COMPLETED event")
+    public void verifyTransferCompletedEvent(String senderId, String receiverId, BigDecimal amount, int timeout) {
+        BaseEvent event = waitForEvent(senderId, TOPIC, Duration.ofSeconds(timeout));
+
+        assertThat(event).isInstanceOf(TransferCompletedEvent.class);
+        TransferCompletedEvent transferCompletedEvent = (TransferCompletedEvent) event;
+
+        assertThat(transferCompletedEvent.getData()).as("Event data is missing").isNotNull();
+        SoftAssertions softly = new SoftAssertions();
+        softly.assertThat(transferCompletedEvent.getEventType())
+                .as("eventType")
+                .isEqualTo("TRANSFER_COMPLETED");
+        softly.assertThat(transferCompletedEvent.getAccountId()).as("accountId").isEqualTo(senderId);
+        softly.assertThat(transferCompletedEvent.getRelatedAccountId())
+                .as("relatedAccountId")
+                .isEqualTo(receiverId);
+        softly.assertThat(transferCompletedEvent.getData().getAmount()).as("amount").isEqualTo(amount);
+        softly.assertThat(transferCompletedEvent.getData().getToAccount())
+                .as("toAccount")
+                .isEqualTo(receiverId);
+        softly.assertThat(transferCompletedEvent.getTimestamp()).as("timestamp").isNotNull();
+        softly.assertAll();
     }
 }
