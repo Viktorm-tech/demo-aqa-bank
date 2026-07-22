@@ -40,7 +40,7 @@ jobs:
         run: |
           docker compose up -d --build
           # Wait until the API health endpoint is reachable
-          timeout 300 sh -c 'until curl -s -f -o /dev/null http://localhost:8080/actuator/health; do sleep 2; done'
+          timeout 600 sh -c 'until curl -s -o /dev/null http://localhost:8080/api/accounts; do sleep 2; done'
 
       - name: Show banking-api logs on failure
         if: failure()
@@ -61,7 +61,7 @@ jobs:
         run: |
           docker compose up -d -e LIMITS_CHECK_URL=http://172.17.0.1:8081/limits/check --force-recreate banking-api
           # Wait for the API to restart and become healthy
-          timeout 60 sh -c 'until curl -s -f -o /dev/null http://localhost:8080/actuator/health; do sleep 2; done'
+          timeout 60 sh -c 'until curl -s -o /dev/null http://localhost:8080/api/accounts; do sleep 2; done'
 
       # 7. Run tests (Maven) from the java-framework module
       - name: Run tests
