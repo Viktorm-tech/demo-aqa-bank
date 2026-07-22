@@ -40,7 +40,12 @@ jobs:
         run: |
           docker compose up -d --build
           # Wait until the API health endpoint is reachable
-          timeout 60 sh -c 'until curl -s -f -o /dev/null http://localhost:8080/actuator/health; do sleep 2; done'
+          timeout 300 sh -c 'until curl -s -f -o /dev/null http://localhost:8080/actuator/health; do sleep 2; done'
+
+      - name: Show banking-api logs on failure
+        if: failure()
+        working-directory: ./banking-api
+        run: docker compose logs
 
       # 5. Start WireMock (from demo-aqa-bank) to mock the limit-checking service
       - name: Start WireMock
