@@ -30,7 +30,11 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      # 4. Launch core services of banking-api (PostgreSQL, Kafka, Zookeeper, and the API itself)
+      # Set up Docker Compose !!!
+      - name: Set up Docker Compose
+        uses: docker/setup-compose-action@v2
+
+      # 4. Launch core services of banking-api
       - name: Start banking-api services
         working-directory: ./banking-api
         run: |
