@@ -34,14 +34,14 @@ jobs:
       - name: Start banking-api services
         working-directory: ./banking-api
         run: |
-          docker-compose up -d --build
+          docker compose up -d --build
           # Wait until the API health endpoint is reachable
           timeout 60 sh -c 'until curl -s -f -o /dev/null http://localhost:8080/actuator/health; do sleep 2; done'
 
       # 5. Start WireMock (from demo-aqa-bank) to mock the limit-checking service
       - name: Start WireMock
         run: |
-          docker-compose -f docker-compose.yml up -d wiremock
+          docker compose -f docker-compose.yml up -d wiremock
           # Wait until WireMock is ready
           timeout 30 sh -c 'until curl -s -f -o /dev/null http://localhost:8081/__admin/health; do sleep 2; done'
 
@@ -50,11 +50,11 @@ jobs:
       - name: Reconfigure banking-api to use WireMock
         working-directory: ./banking-api
         run: |
-          docker-compose up -d -e LIMITS_CHECK_URL=http://host.docker.internal:8081/limits/check --force-recreate banking-api
+          docker compose up -d -e LIMITS_CHECK_URL=http://172.17.0.1:8081/limits/check --force-recreate banking-api
           # Wait for the API to restart and become healthy
           timeout 60 sh -c 'until curl -s -f -o /dev/null http://localhost:8080/actuator/health; do sleep 2; done'
 
-      # 7. Run the Java tests (Maven) from the java-framework module
+      # 7. Run tests (Maven) from the java-framework module
       - name: Run tests
         working-directory: ./java-framework
         run: mvn clean test
@@ -75,5 +75,5 @@ jobs:
       - name: Stop containers
         if: always()
         run: |
-          docker-compose -f docker-compose.yml down
-          docker-compose -f ./banking-api/docker-compose.yml down
+          docker compose -f docker-compose.yml down
+          docker compose -f ./banking-api/docker-compose.yml down
