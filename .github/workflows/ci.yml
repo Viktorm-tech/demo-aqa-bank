@@ -59,8 +59,8 @@ jobs:
       - name: Reconfigure banking-api to use WireMock
         working-directory: ./banking-api
         run: |
-          docker compose up -d -e LIMITS_CHECK_URL=http://172.17.0.1:8081/limits/check --force-recreate banking-api
-          # Wait for the API to restart and become healthy
+          echo "LIMITS_CHECK_URL=http://172.17.0.1:8081/limits/check" >> .env
+          docker compose up -d --force-recreate banking-api
           timeout 60 sh -c 'until curl -s -o /dev/null http://localhost:8080/api/accounts; do sleep 2; done'
 
       # 7. Run tests (Maven) from the java-framework module
