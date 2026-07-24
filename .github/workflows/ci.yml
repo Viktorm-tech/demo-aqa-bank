@@ -101,6 +101,11 @@ jobs:
           destination_dir: ./allure-report
           keep_files: true
 
+      - name: Show Allure report URL
+        if: always()
+        run: |
+          echo "✅ Allure report: https://Viktorm-tech.github.io/demo-aqa-bank/allure-report/"
+
       # 10. Always stop containers, even if tests fail, to free runner resources
       - name: Stop containers
         if: always()
