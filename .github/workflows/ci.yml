@@ -70,15 +70,24 @@ jobs:
 
       # 8. Generate Allure report using the Maven plugin
       - name: Generate Allure report
+        if: always()
         working-directory: ./java-framework
         run: mvn allure:report
 
       # 9. Upload the generated Allure report as a build artifact
       - name: Upload Allure report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: java-framework/target/site/allure-maven-plugin/
+
+      - name: Upload Allure raw results (for debugging)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: java-framework/target/allure-results/
 
       # 10. Always stop containers, even if tests fail, to free runner resources
       - name: Stop containers
