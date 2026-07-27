@@ -1,5 +1,6 @@
 package org.morski.steps;
 
+import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import org.assertj.core.api.SoftAssertions;
 import org.morski.constants.AccountStatus;
@@ -32,21 +33,22 @@ public class DatabaseSteps {
         return rows.getFirst();
     }
 
-    @Step("Create account in DB")
     public void createAccount(Account account) {
-        var sql ="INSERT INTO accounts (id, customer_id, balance, currency, status, created_at, updated_at)" +
-                " VALUES (?, ?, ?, ?, ?, ?, ?)";
-        var updateCount = dbClient.executeUpdate(
-                sql,
-                account.getId(),
-                account.getCustomerId(),
-                account.getBalance(),
-                account.getCurrency().name(),
-                account.getStatus().name(),
-                account.getCreatedAt(),
-                account.getUpdatedAt()
-        );
-        assertThat(updateCount).as("Updated DB rows").isEqualTo(1);
+        Allure.step("Create account in DB", () -> {
+            var sql ="INSERT INTO accounts (id, customer_id, balance, currency, status, created_at, updated_at)" +
+                    " VALUES (?, ?, ?, ?, ?, ?, ?)";
+            var updateCount = dbClient.executeUpdate(
+                    sql,
+                    account.getId(),
+                    account.getCustomerId(),
+                    account.getBalance(),
+                    account.getCurrency().name(),
+                    account.getStatus().name(),
+                    account.getCreatedAt(),
+                    account.getUpdatedAt()
+            );
+            assertThat(updateCount).as("Updated DB rows").isEqualTo(1);
+        });
     }
 
     @Step("Verify account id {accountId} has valid data in DB")

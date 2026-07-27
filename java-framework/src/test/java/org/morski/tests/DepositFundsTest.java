@@ -14,11 +14,11 @@ import java.time.format.DateTimeFormatter;
 import static org.morski.steps.AccountSteps.createDefaultAccount;
 
 @Epic("Integration Tests")
-@Story("Deposit operations")
+@Story("Deposit funds")
 public class DepositFundsTest extends BaseTest {
 
     @Test
-    @DisplayName("Deposit funds")
+    @DisplayName("Amount added to balance")
     @Description("Positive: POST /api/accounts/{id}/deposit returns 200 OK amount added to balance")
     public void depositFundsTest() {
 

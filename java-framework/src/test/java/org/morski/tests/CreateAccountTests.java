@@ -15,11 +15,11 @@ import java.math.BigDecimal;
 import static org.morski.validators.ApiValidators.validateNewAccountResponse;
 
 @Epic("Integration Tests")
-@Story("Account operations")
+@Story("Create new account")
 public class CreateAccountTests extends BaseTest {
 
     @Test
-    @DisplayName("Create new account")
+    @DisplayName("New account created successfully")
     @Description("Positive: POST /api/accounts creates account and returns 201")
     public void createAccountTest() {
 

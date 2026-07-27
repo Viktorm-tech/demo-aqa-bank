@@ -1,6 +1,8 @@
 package org.morski.tests;
 
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Story;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.morski.base.BaseTest;
@@ -11,9 +13,11 @@ import java.time.format.DateTimeFormatter;
 
 import static org.morski.steps.AccountSteps.createAccountWithBalance;
 
+@Epic("Integration Tests")
+@Story("Withdraw funds")
 public class WithdrawFundsTest extends BaseTest {
     @Test
-    @DisplayName("Withdraw funds")
+    @DisplayName("Funds successfully withdrawn")
     @Description("Positive: POST /api/accounts/{id}/withdraw returns 200 OK amount debited from balance")
     public void withdrawFundsTest() {
 

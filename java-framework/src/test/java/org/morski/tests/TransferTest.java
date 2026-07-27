@@ -1,6 +1,8 @@
 package org.morski.tests;
 
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Story;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.morski.base.BaseTest;
@@ -11,9 +13,11 @@ import java.time.format.DateTimeFormatter;
 
 import static org.morski.steps.AccountSteps.createAccountWithBalance;
 
+@Epic("Integration Tests")
+@Story("Transfer between accounts")
 public class TransferTest extends BaseTest {
     @Test
-    @DisplayName("Transfer between accounts")
+    @DisplayName("Transferred successfully between accounts")
     @Description("Positive: POST /api/accounts/{fromId}/transfer returns 200 OK amount transferred between accounts")
     public void transferTest() {
 

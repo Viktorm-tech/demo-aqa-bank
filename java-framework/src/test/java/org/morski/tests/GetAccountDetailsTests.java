@@ -13,11 +13,11 @@ import static org.morski.steps.AccountSteps.createDefaultAccount;
 import static org.morski.validators.ApiValidators.validateAccountResponse;
 
 @Epic("Integration Tests")
-@Story("Account operations")
+@Story("Get account details")
 public class GetAccountDetailsTests extends BaseTest {
 
     @Test
-    @DisplayName("Get account details")
+    @DisplayName("Get existing account details")
     @Description("Positive: GET /api/accounts/{id} returns account data")
     public void getAccountTest() {
 
