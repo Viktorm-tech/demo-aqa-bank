@@ -19,28 +19,33 @@ public class ApiSteps {
         this.spec = spec;
     }
 
-    @Step("Create account")
     public Response createAccount(Account account) {
+        return Allure.step(String.format("Create account: %s", account.toString()), () -> {
 
-        String body = String.format("""
-                {
-                    "customerId": "%s",
-                    "initialBalance": %s,
-                    "currency": "%s"
-                }
-                """,
-                account.getCustomerId(),
-                account.getBalance(),
-                account.getCurrency()
-        );
+            String body = String.format("""
+                            {
+                                "customerId": "%s",
+                                "initialBalance": %s,
+                                "currency": "%s"
+                            }
+                            """,
+                    account.getCustomerId(),
+                    account.getBalance(),
+                    account.getCurrency()
+            );
 
-        Allure.addAttachment("Request body", "application/json", body);
+            Allure.addAttachment("Request body", "application/json", body);
 
-        return given()
-                .spec(spec)
-                .body(body)
-                .when()
-                .post("/api/accounts");
+            Response response = given()
+                    .spec(spec)
+                    .body(body)
+                    .when()
+                    .post("/api/accounts");
+
+            Allure.addAttachment("Response body", "application/json", response.asString());
+
+            return response;
+        });
     }
 
     @Step("Get account id {accountId}")
