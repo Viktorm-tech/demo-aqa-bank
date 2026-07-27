@@ -1,1 +1,1 @@
-{"total":1,"items":[{"uid":"98683cde06b1063324b16efd42edbc71","name":"Integration Tests","statistic":{"failed":2,"broken":1,"skipped":0,"passed":2,"unknown":0,"total":5}}]}
+{"total":1,"items":[{"uid":"98683cde06b1063324b16efd42edbc71","name":"Integration Tests","statistic":{"failed":2,"broken":2,"skipped":0,"passed":1,"unknown":0,"total":5}}]}
