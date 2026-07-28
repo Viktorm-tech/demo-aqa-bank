@@ -26,7 +26,7 @@ public class DepositFundsTest extends BaseTest {
         databaseSteps.createAccount(account);
 
         var depositAmount = BigDecimal.valueOf(500, 2);
-        var response = apiSteps.deposit(account.getId().toString(), depositAmount);
+        var response = apiSteps.deposit(account.getId(), depositAmount);
         response.then().statusCode(200);
 
         var headerDate = response.getHeader("Date");
