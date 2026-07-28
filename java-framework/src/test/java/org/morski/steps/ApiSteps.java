@@ -2,7 +2,6 @@ package org.morski.steps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qameta.allure.Allure;
-import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.morski.constants.HttpMethod;
@@ -82,14 +81,12 @@ public class ApiSteps {
                 HttpMethod.POST, DEPOSIT_PATH, request, accountId);
     }
 
-    @Step("Withdraw funds: amount={amount}")
     public Response withdraw(String accountId, BigDecimal amount) {
         var request = WithdrawRequest.builder().amount(amount).build();
         return executeRequest(String.format("Withdraw funds: amount=%s", amount),
                 HttpMethod.POST, WITHDRAW_PATH, request, accountId);
     }
 
-    @Step("Transfer {amount}")
     public Response transfer(String senderId, String receiverId, BigDecimal amount) {
         var request = TransferRequest.builder().toAccountId(receiverId).amount(amount).build();
         return executeRequest(String.format("Transfer %s to user %s", amount, receiverId),
