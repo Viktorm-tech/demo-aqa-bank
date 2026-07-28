@@ -1,0 +1,1 @@
+{"customerId":"acc123","initialBalance":5.00,"currency":"EUR"}

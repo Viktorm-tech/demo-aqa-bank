@@ -1,0 +1,1 @@
+{"message":"Failed to verify limit: I/O error on POST request for \"http://host.docker.internal:8081/limits/check\": host.docker.internal","status":400,"timestamp":"2026-07-28T19:17:35.140185571"}
