@@ -57,14 +57,14 @@ jobs:
           # Wait until WireMock is ready
           timeout 30 sh -c 'until curl -s -f -o /dev/null http://localhost:8081/__admin/health; do sleep 2; done'
 
-#      # 6. Reconfigure banking-api to point to the WireMock instance for limit checks
-#      #    This overrides the LIMITS_CHECK_URL environment variable and restarts the container.
-#      - name: Reconfigure banking-api to use WireMock
-#        working-directory: ./banking-api
-#        run: |
-#          echo "LIMITS_CHECK_URL=http://172.17.0.1:8081/limits/check" >> .env
-#          docker compose up -d --force-recreate banking-api
-#          timeout 60 sh -c 'until curl -s -o /dev/null http://localhost:8080/api/accounts; do sleep 2; done'
+      # 6. Reconfigure banking-api to point to the WireMock instance for limit checks
+      #    This overrides the LIMITS_CHECK_URL environment variable and restarts the container.
+      - name: Reconfigure banking-api to use WireMock
+        working-directory: ./banking-api
+        run: |
+          echo "LIMITS_CHECK_URL=http://172.17.0.1:8081/limits/check" >> .env
+          docker compose up -d --force-recreate banking-api
+          timeout 60 sh -c 'until curl -s -o /dev/null http://localhost:8080/api/accounts; do sleep 2; done'
 
       # 7. Run tests (Maven) from the java-framework module
       - name: Run tests
