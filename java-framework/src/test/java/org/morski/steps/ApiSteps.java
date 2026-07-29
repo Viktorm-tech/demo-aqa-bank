@@ -60,7 +60,6 @@ public class ApiSteps {
         });
     }
 
-    @Step("Create account")
     public Response createAccount(Account account) {
         var request = CreateAccountRequest.builder()
                 .customerId(account.getCustomerId())
