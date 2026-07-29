@@ -17,7 +17,7 @@
         <restassured.version>5.5.6</restassured.version>
         <selenide.version>7.3.2</selenide.version>
         <testcontainers.version>1.19.8</testcontainers.version>
-        <allure.version>2.35.3</allure.version>
+        <allure.version>2.35.1</allure.version>
         <lombok.version>1.18.42</lombok.version>
         <assertj.version>3.27.7</assertj.version>
         <postgresql.version>42.7.3</postgresql.version>
