@@ -2,6 +2,7 @@ package org.morski.steps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qameta.allure.Allure;
+import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.morski.constants.HttpMethod;
@@ -59,6 +60,7 @@ public class ApiSteps {
         });
     }
 
+    @Step("Create account")
     public Response createAccount(Account account) {
         var request = CreateAccountRequest.builder()
                 .customerId(account.getCustomerId())
