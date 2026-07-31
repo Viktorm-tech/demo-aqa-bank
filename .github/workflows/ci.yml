@@ -26,47 +26,44 @@ jobs:
           repository: Viktorm-tech/banking-api
           path: banking-api
 
-      # 3. Set up JDK 21 (used both for banking-api build and test execution)
+      # 3. Set up JDK 21
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
 
-      # Set up Docker Compose !!!
+      # 4. Set up Docker Compose
       - name: Set up Docker Compose
         uses: docker/setup-compose-action@v2
 
-      # 4. Reconfigure banking-api to point to the WireMock instance for limit checks
-      #    This overrides the LIMITS_CHECK_URL environment variable and restarts the container.
-      - name: Reconfigure banking-api to use WireMock
-        working-directory: ./banking-api
+      # 5. Start WireMock
+      - name: Start WireMock
         run: |
-          echo "LIMITS_CHECK_URL=http://172.17.0.1:8081/limits/check" >> .env
-          docker compose up -d --force-recreate banking-api
-          timeout 60 sh -c 'until curl -s -o /dev/null http://localhost:8080/api/accounts; do sleep 2; done'
+          docker compose -f docker-compose.yml up -d wiremock
+          # Ждём, пока WireMock станет доступен
+          timeout 30 sh -c 'until curl -s -f -o /dev/null http://localhost:8081/__admin/health; do sleep 2; done'
 
-      # 5. Launch core services of banking-api
-      - name: Start banking-api services
+      # 6. Launch core services of banking-api
+      - name: Start banking-api with extra_hosts
         working-directory: ./banking-api
         run: |
-          docker compose up -d --build
-          # Wait until the API health endpoint is reachable
+          cat > docker-compose.override.yml <<EOF
+          services:
+            banking-api:
+              extra_hosts:
+                - "host.docker.internal:host-gateway"
+          EOF
+          docker compose -f docker-compose.yml -f docker-compose.override.yml up -d --build
           timeout 600 sh -c 'until curl -s -o /dev/null http://localhost:8080/api/accounts; do sleep 2; done'
 
+      # 7. Logs banking-api if fail
       - name: Show banking-api logs on failure
         if: failure()
         working-directory: ./banking-api
         run: docker compose logs
 
-      # 6. Start WireMock (from demo-aqa-bank) to mock the limit-checking service
-      - name: Start WireMock
-        run: |
-          docker compose -f docker-compose.yml up -d wiremock
-          # Wait until WireMock is ready
-          timeout 30 sh -c 'until curl -s -f -o /dev/null http://localhost:8081/__admin/health; do sleep 2; done'
-
-      # 7. Run tests (Maven) from the java-framework module
+      # 8. Run tests (Maven)
       - name: Run tests
         working-directory: ./java-framework
         run: mvn clean test
@@ -111,4 +108,4 @@ jobs:
         if: always()
         run: |
           docker compose -f docker-compose.yml down
-          docker compose -f ./banking-api/docker-compose.yml down
+          docker compose -f ./banking-api/docker-compose.yml -f ./banking-api/docker-compose.override.yml down || true
