@@ -62,7 +62,7 @@ public class DatabaseSteps {
         });
     }
 
-    @Step("Verify balance increased by {amount}")
+    @Step("Verify balance increased to {expectedBalance}")
     public void verifyBalanceChanged(Account account, BigDecimal expectedBalance, Instant updatedAt) {
         var row = getAccountFromDB(account.getId());
 

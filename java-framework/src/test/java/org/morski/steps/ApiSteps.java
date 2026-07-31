@@ -1,5 +1,6 @@
 package org.morski.steps;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
@@ -34,32 +35,35 @@ public class ApiSteps {
         this.objectMapper = new ObjectMapper();
     }
 
-    private Response executeRequest(String stepDescription, HttpMethod method, String path,
+    private Response executeRequest(HttpMethod method, String path,
                                     Object requestBody, Object... pathParams) {
-        return Allure.step(stepDescription, () -> {
+        var request = given().spec(spec);
 
-            var request = given().spec(spec);
-
-            if (requestBody != null) {
-                String jsonBody = objectMapper.writeValueAsString(requestBody);
-                Allure.addAttachment("Request body", "application/json", jsonBody);
-                request.body(jsonBody);
+        if (requestBody != null) {
+            String jsonBody;
+            try {
+                jsonBody = objectMapper.writeValueAsString(requestBody);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
             }
+            Allure.addAttachment("Request body", "application/json", jsonBody);
+            request.body(jsonBody);
+        }
 
-            var response = switch (method) {
-                case GET -> request.get(path, pathParams);
-                case POST -> request.post(path, pathParams);
-            };
+        var response = switch (method) {
+            case GET -> request.get(path, pathParams);
+            case POST -> request.post(path, pathParams);
+        };
 
-            var responseBody = response.asString();
-            if (responseBody != null && !responseBody.isEmpty()) {
-                Allure.addAttachment("Response body", "application/json", responseBody);
-            }
+        var responseBody = response.asString();
+        if (responseBody != null && !responseBody.isEmpty()) {
+            Allure.addAttachment("Response body", "application/json", responseBody);
+        }
 
-            return response;
-        });
+        return response;
     }
 
+    @Step("Create account")
     public Response createAccount(Account account) {
         var request = CreateAccountRequest.builder()
                 .customerId(account.getCustomerId())
@@ -67,30 +71,29 @@ public class ApiSteps {
                 .currency(account.getCurrency().name())
                 .build();
 
-        return executeRequest("Create account", HttpMethod.POST, ACCOUNTS_PATH, request);
+        return executeRequest(HttpMethod.POST, ACCOUNTS_PATH, request);
     }
 
+    @Step("Get account {accountId}")
     public Response getAccountById(UUID accountId) {
-        return executeRequest(String.format("Get account %s", accountId),
-                HttpMethod.GET, ACCOUNT_BY_ID_PATH, null, accountId);
+        return executeRequest(HttpMethod.GET, ACCOUNT_BY_ID_PATH, null, accountId);
     }
 
-
+    @Step("Deposit {amount} to account {accountId}")
     public Response deposit(UUID accountId, BigDecimal amount) {
         var request = DepositRequest.builder().amount(amount).build();
-        return executeRequest(String.format("Deposit %s to account %s", amount, accountId),
-                HttpMethod.POST, DEPOSIT_PATH, request, accountId);
+        return executeRequest(HttpMethod.POST, DEPOSIT_PATH, request, accountId);
     }
 
+    @Step("Withdraw funds: amount={amount}")
     public Response withdraw(String accountId, BigDecimal amount) {
         var request = WithdrawRequest.builder().amount(amount).build();
-        return executeRequest(String.format("Withdraw funds: amount=%s", amount),
-                HttpMethod.POST, WITHDRAW_PATH, request, accountId);
+        return executeRequest(HttpMethod.POST, WITHDRAW_PATH, request, accountId);
     }
 
+    @Step("Transfer {amount} to user {receiverId}")
     public Response transfer(String senderId, String receiverId, BigDecimal amount) {
         var request = TransferRequest.builder().toAccountId(receiverId).amount(amount).build();
-        return executeRequest(String.format("Transfer %s to user %s", amount, receiverId),
-                HttpMethod.POST, TRANSFER_PATH, request, senderId);
+        return executeRequest(HttpMethod.POST, TRANSFER_PATH, request, senderId);
     }
 }
