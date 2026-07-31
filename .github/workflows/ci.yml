@@ -37,7 +37,16 @@ jobs:
       - name: Set up Docker Compose
         uses: docker/setup-compose-action@v2
 
-      # 4. Launch core services of banking-api
+      # 4. Reconfigure banking-api to point to the WireMock instance for limit checks
+      #    This overrides the LIMITS_CHECK_URL environment variable and restarts the container.
+      - name: Reconfigure banking-api to use WireMock
+        working-directory: ./banking-api
+        run: |
+          echo "LIMITS_CHECK_URL=http://172.17.0.1:8081/limits/check" >> .env
+          docker compose up -d --force-recreate banking-api
+          timeout 60 sh -c 'until curl -s -o /dev/null http://localhost:8080/api/accounts; do sleep 2; done'
+
+      # 5. Launch core services of banking-api
       - name: Start banking-api services
         working-directory: ./banking-api
         run: |
@@ -50,21 +59,12 @@ jobs:
         working-directory: ./banking-api
         run: docker compose logs
 
-      # 5. Start WireMock (from demo-aqa-bank) to mock the limit-checking service
+      # 6. Start WireMock (from demo-aqa-bank) to mock the limit-checking service
       - name: Start WireMock
         run: |
           docker compose -f docker-compose.yml up -d wiremock
           # Wait until WireMock is ready
           timeout 30 sh -c 'until curl -s -f -o /dev/null http://localhost:8081/__admin/health; do sleep 2; done'
-
-      # 6. Reconfigure banking-api to point to the WireMock instance for limit checks
-      #    This overrides the LIMITS_CHECK_URL environment variable and restarts the container.
-      - name: Reconfigure banking-api to use WireMock
-        working-directory: ./banking-api
-        run: |
-          echo "LIMITS_CHECK_URL=http://172.17.0.1:8081/limits/check" >> .env
-          docker compose up -d --force-recreate banking-api
-          timeout 60 sh -c 'until curl -s -o /dev/null http://localhost:8080/api/accounts; do sleep 2; done'
 
       # 7. Run tests (Maven) from the java-framework module
       - name: Run tests
