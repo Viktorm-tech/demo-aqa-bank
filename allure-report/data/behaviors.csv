@@ -1,6 +1,6 @@
 "BROKEN","EPIC","FAILED","FEATURE","PASSED","SKIPPED","STORY","UNKNOWN"
 "0","Integration Tests","0","","2","0","Get account details","0"
-"0","Integration Tests","1","","0","0","Transfer between accounts","0"
 "0","Integration Tests","0","","1","0","Deposit funds","0"
-"0","Integration Tests","1","","0","0","Withdraw funds","0"
 "0","Integration Tests","0","","1","0","Create new account","0"
+"0","Integration Tests","0","","1","0","Withdraw funds","0"
+"0","Integration Tests","1","","0","0","Transfer between accounts","0"
