@@ -12,6 +12,7 @@ import org.morski.dto.api.WithdrawRequest;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+import java.util.function.Function;
 
 import static io.restassured.RestAssured.given;
 
@@ -22,10 +23,11 @@ public class ApiSteps {
     private final RequestSpecification postRequestSpec;
 
     private static final String ACCOUNTS_PATH = "/api/accounts";
-    private static final String ACCOUNT_BY_ID_PATH = ACCOUNTS_PATH + "/{accountId}";
+    private static final String ACCOUNT_BY_ID_PATH = ACCOUNTS_PATH + "/{%s}";
     private static final String DEPOSIT_PATH = ACCOUNT_BY_ID_PATH + "/deposit";
     private static final String WITHDRAW_PATH = ACCOUNT_BY_ID_PATH + "/withdraw";
     private static final String TRANSFER_PATH = ACCOUNT_BY_ID_PATH + "/transfer";
+    private static final String TRANSACTIONS_PATH = ACCOUNT_BY_ID_PATH + "/transactions";
 
     public ApiSteps(RequestSpecification baseRequestSpec, RequestSpecification postRequestSpec) {
         this.baseRequestSpec = baseRequestSpec;
@@ -78,6 +80,14 @@ public class ApiSteps {
     @Step("Transfer {amount} to user {receiverId}")
     public Response transfer(String senderId, String receiverId, BigDecimal amount) {
         var request = TransferRequest.builder().toAccountId(receiverId).amount(amount).build();
-        return executeRequest(HttpMethod.POST, TRANSFER_PATH, request, senderId);
+        return apiCallJson(request, r -> r.post(TRANSFER_PATH, senderId));
+    }
+
+    @Step("Get transactions history for account {accountId}")
+    public Response getTransactions(String accountId, int page, int size) {
+        return apiCall(r -> r
+                .queryParam("page", page)
+                .queryParam("size", size)
+                .get(TRANSACTIONS_PATH, accountId));
     }
 }
