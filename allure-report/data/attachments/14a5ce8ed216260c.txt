@@ -1,0 +1,1 @@
+{"id":"733d0a1d-4149-41b6-86c6-adf8e73725c2","customerId":"acc123","balance":5.00,"currency":"EUR","status":"ACTIVE"}
