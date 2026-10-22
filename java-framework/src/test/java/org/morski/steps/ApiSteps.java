@@ -25,7 +25,7 @@ public class ApiSteps {
     private final ObjectMapper objectMapper;
 
     private static final String ACCOUNTS_PATH = "/api/accounts";
-    private static final String ACCOUNT_BY_ID_PATH = ACCOUNTS_PATH + "/{%s}";
+    private static final String ACCOUNT_BY_ID_PATH = ACCOUNTS_PATH + "/{accountId}";
     private static final String DEPOSIT_PATH = ACCOUNT_BY_ID_PATH + "/deposit";
     private static final String WITHDRAW_PATH = ACCOUNT_BY_ID_PATH + "/withdraw";
     private static final String TRANSFER_PATH = ACCOUNT_BY_ID_PATH + "/transfer";
