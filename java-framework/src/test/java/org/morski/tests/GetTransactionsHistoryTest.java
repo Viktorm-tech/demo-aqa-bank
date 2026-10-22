@@ -6,6 +6,7 @@ import io.qameta.allure.Story;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.morski.base.BaseTest;
+import org.morski.dto.api.TransactionsHistoryResponse;
 
 import static java.util.UUID.randomUUID;
 
@@ -20,5 +21,11 @@ public class GetTransactionsHistoryTest extends BaseTest {
 
         var accountId = randomUUID();
         var transactions = databaseSteps.createRandomTransactions(accountId, 10);
+
+        var response = apiSteps.getTransactions(accountId.toString(), 1, 10)
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(TransactionsHistoryResponse.class);
     }
 }
