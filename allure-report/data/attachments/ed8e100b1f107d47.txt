@@ -1,0 +1,1 @@
+{"id":"2494b41c-a055-4959-a49a-67ab66c38578","customerId":"nDssQFpOR1","balance":5.00,"currency":"USD","status":"ACTIVE"}
