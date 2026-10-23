@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.morski.constants.TransactionType;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -31,5 +31,5 @@ public class TransactionData {
     private String description;
 
     @JsonProperty(required = true)
-    private Instant timestamp;
+    private LocalDateTime timestamp;
 }
