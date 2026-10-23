@@ -22,7 +22,7 @@ public class GetTransactionsHistoryTest extends BaseTest {
         var accountId = randomUUID();
         var transactions = databaseSteps.createRandomTransactions(accountId, 10);
 
-        var response = apiSteps.getTransactions(accountId.toString(), 1, 10)
+        var response = apiSteps.getTransactions(accountId.toString(), 0, 10)
                 .then()
                 .statusCode(200)
                 .extract()
