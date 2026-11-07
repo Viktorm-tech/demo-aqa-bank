@@ -1,8 +1,5 @@
 package org.morski.steps;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -21,8 +18,8 @@ import static io.restassured.RestAssured.given;
 
 public class ApiSteps {
 
-    private final RequestSpecification spec;
-    private final ObjectMapper objectMapper;
+    private final RequestSpecification baseRequestSpec;
+    private final RequestSpecification postRequestSpec;
 
     private static final String ACCOUNTS_PATH = "/api/accounts";
     private static final String ACCOUNT_BY_ID_PATH = ACCOUNTS_PATH + "/{accountId}";
@@ -30,37 +27,24 @@ public class ApiSteps {
     private static final String WITHDRAW_PATH = ACCOUNT_BY_ID_PATH + "/withdraw";
     private static final String TRANSFER_PATH = ACCOUNT_BY_ID_PATH + "/transfer";
 
-    public ApiSteps(RequestSpecification spec) {
-        this.spec = spec;
-        this.objectMapper = new ObjectMapper();
+    public ApiSteps(RequestSpecification baseRequestSpec, RequestSpecification postRequestSpec) {
+        this.baseRequestSpec = baseRequestSpec;
+        this.postRequestSpec = postRequestSpec;
     }
 
     private Response executeRequest(HttpMethod method, String path,
                                     Object requestBody, Object... pathParams) {
-        var request = given().spec(spec);
 
-        if (requestBody != null) {
-            String jsonBody;
-            try {
-                jsonBody = objectMapper.writeValueAsString(requestBody);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-            Allure.addAttachment("Request body", "application/json", jsonBody);
-            request.body(jsonBody);
+        var request = (method == HttpMethod.GET) ? given().spec(baseRequestSpec) : given().spec(postRequestSpec);
+
+        if (requestBody != null && method != HttpMethod.GET) {
+            request.body(requestBody);
         }
 
-        var response = switch (method) {
+        return switch (method) {
             case GET -> request.get(path, pathParams);
             case POST -> request.post(path, pathParams);
         };
-
-        var responseBody = response.asString();
-        if (responseBody != null && !responseBody.isEmpty()) {
-            Allure.addAttachment("Response body", "application/json", responseBody);
-        }
-
-        return response;
     }
 
     @Step("Create account")
