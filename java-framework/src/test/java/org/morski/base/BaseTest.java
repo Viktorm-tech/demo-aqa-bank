@@ -37,7 +37,7 @@ public abstract class BaseTest {
     protected KafkaSteps kafkaSteps;
 
     @BeforeAll
-    public static void setup() throws Exception {
+    public static void setup() {
 
         ObjectMapper jacksonMapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -89,7 +89,7 @@ public abstract class BaseTest {
     }
 
     @AfterAll
-    public static void tearDown() throws Exception {
+    public static void tearDown() {
         dbClient.close();
     }
 }
