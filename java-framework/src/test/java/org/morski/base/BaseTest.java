@@ -1,11 +1,12 @@
 package org.morski.base;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.RestAssured;
+import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.JsonConfig;
+import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
-import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.config.JsonPathConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -36,17 +37,30 @@ public abstract class BaseTest {
     protected KafkaSteps kafkaSteps;
 
     @BeforeAll
-    public static void setup() throws Exception{
-        RestAssured.baseURI = "http://localhost:8080";
-        RestAssured.config = RestAssuredConfig.config()
-                .jsonConfig(JsonConfig.jsonConfig().numberReturnType(JsonPathConfig.NumberReturnType.BIG_DECIMAL));
+    public static void setup() {
 
-        var requestSpec = new RequestSpecBuilder()
-                .setContentType(ContentType.JSON)
-                .log(LogDetail.ALL)
+        ObjectMapper jacksonMapper = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        RestAssuredConfig restAssuredConfig = RestAssuredConfig.config()
+                .objectMapperConfig(ObjectMapperConfig.objectMapperConfig()
+                        .jackson2ObjectMapperFactory((type, charset) -> jacksonMapper))
+                .jsonConfig(JsonConfig.jsonConfig()
+                        .numberReturnType(JsonPathConfig.NumberReturnType.BIG_DECIMAL));
+
+        var baseRequestSpec = new RequestSpecBuilder()
+                .setBaseUri("http://localhost:8080")
+                .setAccept(ContentType.JSON)
+                .setConfig(restAssuredConfig)
+                .addFilter(new AllureRestAssured())
                 .build();
 
-        apiSteps = new ApiSteps(requestSpec);
+        var postRequestSpec = new RequestSpecBuilder()
+                .addRequestSpecification(baseRequestSpec)
+                .setContentType(ContentType.JSON)
+                .build();
+
+        apiSteps = new ApiSteps(baseRequestSpec, postRequestSpec);
 
         dbClient = new DatabaseClient();
         databaseSteps = new DatabaseSteps(dbClient);
@@ -75,7 +89,7 @@ public abstract class BaseTest {
     }
 
     @AfterAll
-    public static void tearDown() throws Exception {
+    public static void tearDown() {
         dbClient.close();
     }
 }

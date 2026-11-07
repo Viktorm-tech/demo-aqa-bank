@@ -1,6 +1,7 @@
 package org.morski.db;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.morski.config.TestConfig;
 
 import java.sql.Connection;
@@ -19,7 +20,8 @@ import java.util.Map;
 public class DatabaseClient implements AutoCloseable {
     private final Connection connection;
 
-    public DatabaseClient() throws SQLException {
+    @SneakyThrows
+    public DatabaseClient() {
         this.connection = DriverManager.getConnection(
                 TestConfig.getDbUrl(),
                 TestConfig.getDbUser(),
@@ -68,7 +70,8 @@ public class DatabaseClient implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    @SneakyThrows
+    public void close(){
         if (connection != null && !connection.isClosed()) {
             connection.close();
         }
