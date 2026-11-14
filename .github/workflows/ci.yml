@@ -52,7 +52,6 @@ jobs:
       - name: Start WireMock
         run: |
           docker compose -f docker-compose.yml up -d wiremock
-          # Ждём, пока WireMock станет доступен
           timeout 30 sh -c 'until curl -s -f -o /dev/null http://localhost:8081/__admin/health; do sleep 2; done'
 
       # 6. Launch core services of banking-api

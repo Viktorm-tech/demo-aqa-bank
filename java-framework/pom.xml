@@ -170,6 +170,13 @@
             <version>${jackson.version}</version>
         </dependency>
 
+        <!-- datafaker -->
+        <dependency>
+            <groupId>net.datafaker</groupId>
+            <artifactId>datafaker</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+
         <!-- Forced versions for vulnerabilities -->
         <dependency>
             <groupId>commons-codec</groupId>
