@@ -1,0 +1,27 @@
+<div>POST to http://localhost:8080/api/accounts/1b312708-45e2-4557-aab5-1b5fc421b1e1/transfer</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;toAccountId&quot;: &quot;096c33bc-99ac-41e8-9948-7ce68199a90e&quot;,
+    &quot;amount&quot;: 4.00
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Accept: application/json, application/javascript, text/javascript, text/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8080/api/accounts/1b312708-45e2-4557-aab5-1b5fc421b1e1/transfer&#39; -H &#39;Accept: application/json, application/javascript, text/javascript, text/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;toAccountId&quot;: &quot;096c33bc-99ac-41e8-9948-7ce68199a90e&quot;,
+    &quot;amount&quot;: 4.00
+}&#39;
+    </div>
+
