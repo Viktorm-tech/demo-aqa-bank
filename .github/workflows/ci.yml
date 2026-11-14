@@ -21,6 +21,14 @@ jobs:
       # 1. Clone the test repository (demo-aqa-bank)
       - name: Checkout test repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Show checked-out revision
+        run: |
+          echo "ref=$GITHUB_REF"
+          echo "sha=$(git rev-parse HEAD)"
+          git log -1 --oneline
 
       # 2. Clone the banking-api service repository into a separate directory
       - name: Checkout banking-api
