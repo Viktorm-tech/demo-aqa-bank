@@ -14,7 +14,4 @@ public class TransactionsHistoryResponse {
 
     @JsonProperty(required = true)
     private List<TransactionData> content;
-
-    @JsonProperty(required = true)
-    private ;
 }

@@ -1,9 +1,9 @@
 package org.morski.steps;
 
 import io.qameta.allure.Step;
+import io.restassured.http.Method;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.morski.constants.HttpMethod;
 import org.morski.dto.Account;
 import org.morski.dto.api.CreateAccountRequest;
 import org.morski.dto.api.DepositRequest;
@@ -11,10 +11,12 @@ import org.morski.dto.api.TransferRequest;
 import org.morski.dto.api.WithdrawRequest;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.UUID;
-import java.util.function.Function;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.http.Method.GET;
+import static io.restassured.http.Method.POST;
 
 
 public class ApiSteps {
@@ -34,18 +36,26 @@ public class ApiSteps {
         this.postRequestSpec = postRequestSpec;
     }
 
-    private Response executeRequest(HttpMethod method, String path,
-                                    Object requestBody, Object... pathParams) {
+    private Response executeRequest(Method method,
+                                    String path,
+                                    Object requestBody,
+                                    Map<String, ?> queryParams,
+                                    Object... pathParams) {
 
-        var request = (method == HttpMethod.GET) ? given().spec(baseRequestSpec) : given().spec(postRequestSpec);
+        RequestSpecification request = given().spec(method == GET ? baseRequestSpec : postRequestSpec);
 
-        if (requestBody != null && method != HttpMethod.GET) {
+        if (queryParams != null && !queryParams.isEmpty()) {
+            request.queryParams(queryParams);
+        }
+
+        if (requestBody != null && method != GET) {
             request.body(requestBody);
         }
 
         return switch (method) {
             case GET -> request.get(path, pathParams);
             case POST -> request.post(path, pathParams);
+            default -> throw new UnsupportedOperationException("HTTP method " + method + "not implemented");
         };
     }
 
@@ -57,37 +67,38 @@ public class ApiSteps {
                 .currency(account.getCurrency().name())
                 .build();
 
-        return executeRequest(HttpMethod.POST, ACCOUNTS_PATH, request);
+        return executeRequest(POST, ACCOUNTS_PATH, request, Map.of());
     }
 
     @Step("Get account {accountId}")
     public Response getAccountById(UUID accountId) {
-        return executeRequest(HttpMethod.GET, ACCOUNT_BY_ID_PATH, null, accountId);
+        return executeRequest(GET, ACCOUNT_BY_ID_PATH, null, Map.of(), accountId);
     }
 
     @Step("Deposit {amount} to account {accountId}")
     public Response deposit(UUID accountId, BigDecimal amount) {
         var request = DepositRequest.builder().amount(amount).build();
-        return executeRequest(HttpMethod.POST, DEPOSIT_PATH, request, accountId);
+        return executeRequest(POST, DEPOSIT_PATH, request, Map.of(), accountId);
     }
 
     @Step("Withdraw funds: amount={amount}")
     public Response withdraw(String accountId, BigDecimal amount) {
         var request = WithdrawRequest.builder().amount(amount).build();
-        return executeRequest(HttpMethod.POST, WITHDRAW_PATH, request, accountId);
+        return executeRequest(POST, WITHDRAW_PATH, request, Map.of(), accountId);
     }
 
     @Step("Transfer {amount} to user {receiverId}")
     public Response transfer(String senderId, String receiverId, BigDecimal amount) {
         var request = TransferRequest.builder().toAccountId(receiverId).amount(amount).build();
-        return apiCallJson(request, r -> r.post(TRANSFER_PATH, senderId));
+        return executeRequest(POST, TRANSFER_PATH, request, Map.of(), senderId);
     }
 
     @Step("Get transactions history for account {accountId}")
     public Response getTransactions(String accountId, int page, int size) {
-        return apiCall(r -> r
-                .queryParam("page", page)
-                .queryParam("size", size)
-                .get(TRANSACTIONS_PATH, accountId));
+        Map<String, Object> queryParams = Map.of(
+                "page", page,
+                "size", size
+        );
+        return executeRequest(GET, TRANSACTIONS_PATH, null, queryParams, accountId);
     }
 }
